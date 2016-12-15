@@ -1,0 +1,119 @@
+Sub Fechas()
+'
+' Fechas Macro
+'
+
+    Application.EnableEvents = False
+    strFileToOpen = Application.GetOpenFilename _
+    (Title:="Seleccionar archivo", _
+    FileFilter:="Excel Files *.xls* (*.xls*),")
+    
+    Dim wb As Workbook
+    Set wb = Workbooks.Open(strFileToOpen)
+    wb.Activate
+    
+'Reemplazo de palabras o signos----------------------------------------------------------------
+   ActiveSheet.Columns("L:L").Select
+    
+    Selection.Replace What:=".", Replacement:=",", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    
+    ActiveSheet.Columns("AD:AD").Select
+    Selection.Replace What:="Prismática", Replacement:="Viga", LookAt:=xlPart _
+        , SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Selection.Replace What:="Cubo", Replacement:="Cubica", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Selection.Replace What:="Cilindro", Replacement:="Cilíndrica", LookAt:= _
+        xlPart, SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+'---------------------------------------------------------------------------------------------
+    
+'Copia titulos de las columnas de fecha-------------------------------------------------------
+    Call CopiaTitulo
+    ActiveSheet.Columns("D:D").Select
+    
+'Proceso para modificacion de fechas-------------------------------------------------------------
+' Paso 1: Declaramos variables
+    
+    Dim MyRange As Range
+    Dim MyCell As Range
+    Dim contador As Integer
+    contador = 1
+'Paso 2: Definimos el rango de celdas
+    Set MyRange = Selection
+'Paso 3: Realizamos iteraciones a través del rango de celdas
+
+    For Each MyCell In MyRange
+    
+'Paso 4: Extraemos los valores de las fechas
+    If Not IsEmpty(MyCell) Then
+        contador = contador + 1
+    ActiveSheet.Range("AM" & contador).Formula = "=CONCAT(DAY(C" & contador & "),""-"",MONTH(C" & contador & "),""-"",YEAR(C" & contador & "))"
+    ActiveSheet.Range("AN" & contador).Formula = "=CONCAT(DAY(D" & contador & "),""-"",MONTH(D" & contador & "),""-"",YEAR(D" & contador & "))"
+    ActiveSheet.Range("AO" & contador).Formula = "=CONCAT(DAY(R" & contador & "),""-"",MONTH(R" & contador & "),""-"",YEAR(R" & contador & "))"
+    Else
+    Exit For
+    End If
+'Paso 5: Pasar a la siguiente celda
+    Next MyCell
+'------------------------------------------------------------------------------------------------------------------------------------------------
+
+'Reemplaza la columna de la fecha original y borra la ultima fila (datos no necesarios), tambien borra las columnas usadas para este macro
+    Call CopiaFecha
+    Call BuscarUltimaFila
+    ActiveSheet.Range("AM:AO").Select
+    Selection.ClearContents
+    Selection.ClearFormats
+    ActiveSheet.Range("A1").Select
+End Sub
+
+Sub CopiaTitulo()
+'
+' CopiaTitulo Macro
+'
+    ActiveSheet.Range("C1:D1").Select
+    Selection.Copy
+    ActiveSheet.Range("AM1").Select
+    ActiveSheet.Paste
+    ActiveSheet.Range("R1").Select
+    Application.CutCopyMode = False
+    Selection.Copy
+    ActiveSheet.Range("AO1").Select
+    ActiveSheet.Paste
+End Sub
+
+Sub CopiaFecha()
+'
+' CopiaFecha Macro
+'
+
+'
+    ActiveSheet.Range("AM2:AN2").Select
+    ActiveSheet.Range(Selection, Selection.End(xlDown)).Select
+    Application.CutCopyMode = False
+    Selection.Copy
+    ActiveSheet.Range("C2").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Application.CutCopyMode = False
+    Selection.NumberFormat = "m/d/yyyy"
+    ActiveSheet.Range("AO2").Select
+    ActiveSheet.Range(Selection, Selection.End(xlDown)).Select
+    Selection.Copy
+    ActiveSheet.Range("R2").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Application.CutCopyMode = False
+    Selection.NumberFormat = "m/d/yyyy"
+    
+End Sub
+
+Sub BuscarUltimaFila()
+Dim n As Long
+countult = Cells(Rows.Count, 3).End(xlUp).Row
+ActiveSheet.Range(" " & countult & ":" & countult & " ").Select
+Selection.ClearContents
+End Sub
