@@ -1,0 +1,610 @@
+REM  *****  BASIC  *****
+
+Sub Main
+
+End Sub
+
+Sub LlamarTabla()
+Dim oHojaActiva As Object
+Dim sBaseDatos As String
+Dim sTabla As String
+Dim mOpcBD(2) As New "com.sun.star.beans.PropertyValue"
+
+	
+
+	'El nombre de nuestra base de datos
+	sBaseDatos = "Estudios"
+	'La tabla que nos interesa traer
+	sTabla = "Granulometria"
+	'La hoja activa
+	oHojaActiva = ThisComponent.getCurrentController.getActiveSheet()
+	
+	'Las propiedades de la importación, primero el nombre de la base de datos
+	mOpcBD(0).Name = "DatabaseName"
+	mOpcBD(0).Value = sBaseDatos
+	'El tipo de objeto fuente
+	mOpcBD(1).Name = "SourceType"
+	mOpcBD(1).Value = com.sun.star.sheet.DataImportMode.TABLE
+	'El nombre del objeto fuente
+	mOpcBD(2).Name = "SourceObject"
+	mOpcBD(2).Value = sTabla
+	'Importamos la tabla, a partir de la celda A1
+	Controller.getCellRangeByName("A2").doImport( mOpcBD() ) 
+	
+End Sub
+
+Sub Llamar_ID_estudio()
+Dim oHojaActiva As Object
+Dim sBaseDatos As String
+Dim sSQL As String
+Dim mOpcBD(2) As New "com.sun.star.beans.PropertyValue"
+
+    document = ThisComponent  'assigns the current document to the variable document
+	Sheets = document.Sheets  'get the container of all Sheets
+	Sheet = Sheets.getByName("Hoja2")   'get the sheet named Sheet2
+	
+	sBaseDatos = "Estudios"
+	'Establecemos la consulta SQL
+	sSQL = "SELECT ID_Estudio FROM Estudio ORDER BY ID_Estudio DESC LIMIT 1"
+	oHojaActiva = ThisComponent.getCurrentController.getActiveSheet()
+	
+	mOpcBD(0).Name = "DatabaseName"
+	mOpcBD(0).Value = sBaseDatos
+	mOpcBD(1).Name = "SourceType"
+	'Observa como hemos cambiado el tipo de fuente a SQL
+	mOpcBD(1).Value = com.sun.star.sheet.DataImportMode.SQL
+	mOpcBD(2).Name = "SourceObject"
+	mOpcBD(2).Value = sSQL
+	Sheet.getCellRangeByName("A2").doImport( mOpcBD() )
+	
+End Sub
+
+Sub Llamar_ID_muestra()
+Dim oHojaActiva As Object
+Dim sBaseDatos As String
+Dim sSQL As String
+Dim mOpcBD(2) As New "com.sun.star.beans.PropertyValue"
+    document = ThisComponent  'assigns the current document to the variable document
+	Sheets = document.Sheets  'get the container of all Sheets
+	Sheet = Sheets.getByName("Hoja2")   'get the sheet named Sheet2
+
+	sBaseDatos = "Estudios"
+	'Establecemos la consulta SQL
+	sSQL = "SELECT ID_Muestra FROM Aridos ORDER BY ID_Muestra DESC LIMIT 1"
+	oHojaActiva = ThisComponent.getCurrentController.getActiveSheet()
+	
+	mOpcBD(0).Name = "DatabaseName"
+	mOpcBD(0).Value = sBaseDatos
+	mOpcBD(1).Name = "SourceType"
+	'Observa como hemos cambiado el tipo de fuente a SQL
+	mOpcBD(1).Value = com.sun.star.sheet.DataImportMode.SQL
+	mOpcBD(2).Name = "SourceObject"
+	mOpcBD(2).Value = sSQL
+	Sheet.getCellRangeByName("B2").doImport( mOpcBD() )
+	
+End Sub
+
+Sub Llamar_tipo_muestra()
+Dim oHojaActiva As Object
+Dim sBaseDatos As String
+Dim sSQL As String
+Dim mOpcBD(2) As New "com.sun.star.beans.PropertyValue"
+    document = ThisComponent  'assigns the current document to the variable document
+	Sheets = document.Sheets  'get the container of all Sheets
+	Sheet = Sheets.getByName("Hoja2")   'get the sheet named Sheet2
+
+	sBaseDatos = "Estudios"
+	'Establecemos la consulta SQL
+	sSQL = "SELECT Tipo_muestra FROM Aridos ORDER BY ID_Muestra DESC LIMIT 1"
+	oHojaActiva = ThisComponent.getCurrentController.getActiveSheet()
+	
+	mOpcBD(0).Name = "DatabaseName"
+	mOpcBD(0).Value = sBaseDatos
+	mOpcBD(1).Name = "SourceType"
+	'Observa como hemos cambiado el tipo de fuente a SQL
+	mOpcBD(1).Value = com.sun.star.sheet.DataImportMode.SQL
+	mOpcBD(2).Name = "SourceObject"
+	mOpcBD(2).Value = sSQL
+	Sheet.getCellRangeByName("B4").doImport( mOpcBD() )
+	
+End Sub
+
+Sub Insertar_estudio(Nombre,Fecha)
+Dim oDBC As Object
+Dim oBD As Object
+Dim oConexion As Object
+Dim oDeclaracion As Object
+Dim sBaseDatos As String
+Dim sSQL As String
+
+	sBaseDatos = "Estudios"
+	sSQL = "INSERT INTO ""Estudio"" (""Nombre_estudio"",""Fecha_estudio"") VALUES ('"+Nombre+"','"+Fecha+"')" 'CAMBIAR VALUES A INPUTS
+	oDBC = createUnoService("com.sun.star.sdb.DatabaseContext")	
+	oBD = oDBC.getByName( sBaseDatos )
+	oConexion = oBD.getConnection("","")
+	oDeclaracion = oConexion.createStatement()
+	oDeclaracion.executeUpdate( sSQL)
+
+	oDeclaracion.close()
+	oConexion.close()
+	oDeclaracion = Nothing
+	oConexion = Nothing
+	
+End Sub
+
+Sub Insertar_Proveedor(Proveedor)
+Dim oDBC As Object
+Dim oBD As Object
+Dim oConexion As Object
+Dim oDeclaracion As Object
+Dim sBaseDatos As String
+Dim sSQL As String
+Dim oDoc As Object, oSheet As Object
+Dim oCell As Object
+	oDoc=ThisComponent
+    oSheet=oDoc.Sheets.getByName("Hoja2")
+    oCell=oSheet.getCellByposition(1,2)
+	sBaseDatos = "Estudios"
+	sSQL = "INSERT INTO ""Proveedor"" (""ID_Muestra"",""Nombre_proveedor"") VALUES ("+oCell.getValue()+",'"+Proveedor+"')" 'CAMBIAR VALUES A INPUTS
+	oDBC = createUnoService("com.sun.star.sdb.DatabaseContext")	
+	oBD = oDBC.getByName( sBaseDatos )
+	oConexion = oBD.getConnection("","")
+	oDeclaracion = oConexion.createStatement()
+	oDeclaracion.executeUpdate( sSQL)
+
+	oDeclaracion.close()
+	oConexion.close()
+	oDeclaracion = Nothing
+	oConexion = Nothing
+	
+End Sub
+
+Sub Insertar_arido(TipoMuestra,FechaMuestreo,FechaAnalisis,Planta)
+Dim oDBC As Object
+Dim oBD As Object
+Dim oConexion As Object
+Dim oDeclaracion As Object
+Dim sBaseDatos As String
+Dim sSQL As String
+Dim oDoc As Object, oSheet As Object
+Dim oCell As Object
+	oDoc=ThisComponent
+    oSheet=oDoc.Sheets.getByName("Hoja2")
+    oCell=oSheet.getCellByposition(0,2)
+    
+	sBaseDatos = "Estudios"
+	sSQL = "INSERT INTO ""Aridos"" (""ID_Estudio"",""Tipo_muestra"",""Fecha_muestreo"",""Fecha_analisis"",""Planta_estudio"") VALUES ("+oCell.getValue()+",'"+TipoMuestra+"','"+FechaMuestreo+"','"+FechaAnalisis+"','"+Planta+"')" 'CAMBIAR VALUES A INPUTS
+	oDBC = createUnoService("com.sun.star.sdb.DatabaseContext")	
+	oBD = oDBC.getByName( sBaseDatos )
+	oConexion = oBD.getConnection("","")
+	oDeclaracion = oConexion.createStatement()
+	oDeclaracion.executeUpdate( sSQL)
+
+	oDeclaracion.close()
+	oConexion.close()
+	oDeclaracion = Nothing
+	oConexion = Nothing
+	
+End Sub
+
+Sub Insertar_granulogia()
+Dim oDBC As Object
+Dim oBD As Object
+Dim oConexion As Object
+Dim oDeclaracion As Object
+Dim sBaseDatos As String
+Dim sSQL As String
+Dim oDoc As Object, oSheet As Object
+Dim oCell1 As Object
+Dim oCell2 As Object
+Dim oCell3 As Object
+Dim oCell4 As Object
+Dim oCell5 As Object 
+Dim i As Integer
+Dim j As Integer
+
+	oDoc=ThisComponent
+    oSheet=oDoc.Sheets.getByName("Hoja2")
+	sBaseDatos = "Estudios"
+	oDBC = createUnoService("com.sun.star.sdb.DatabaseContext")	
+	oBD = oDBC.getByName( sBaseDatos )
+	oConexion = oBD.getConnection("","")
+	oDeclaracion = oConexion.createStatement()
+  		
+  		j =2
+  		oCell1=oSheet.getCellByposition(1,2)
+  		oCell2=oSheet.getCellByposition(2,j)
+  		oCell3=oSheet.getCellByposition(3,j)
+  		oCell4=oSheet.getCellByposition(4,j)
+  		oCell5=oSheet.getCellByposition(5,j)	
+  		Do
+  		sSQL = "INSERT INTO ""Granulometria"" (""ID_Muestra"",""Tipo_malla"",""Masa_retenida"",""Porcentaje_retenido"",""Porcentaje_pasa"") VALUES ("+oCell1.getValue()+",'"+oCell2.getString()+"',"+oCell3.getValue()+","+oCell4.getValue()+","+oCell5.getValue()+")"
+	    oDeclaracion.executeUpdate(sSQL)
+  		
+  		j=j+1
+  		
+  		oCell2=oSheet.getCellByposition(2,j)
+  		oCell3=oSheet.getCellByposition(3,j)
+  		oCell4=oSheet.getCellByposition(4,j)
+  		oCell5=oSheet.getCellByposition(5,j)
+  		Loop Until oCell2.getString()=""  
+
+	oDeclaracion.close()
+	oConexion.close()
+	oDeclaracion = Nothing
+	oConexion = Nothing
+	
+End Sub
+
+Sub Insertar_finura()
+Dim oDBC As Object
+Dim oBD As Object
+Dim oConexion As Object
+Dim oDeclaracion As Object
+Dim sBaseDatos As String
+Dim sSQL As String
+Dim oDoc As Object, oSheet As Object
+Dim oCell1 As Object
+Dim oCell2 As Object
+	oDoc=ThisComponent
+    oSheet=oDoc.Sheets.getByName("Hoja2")
+    oCell1=oSheet.getCellByposition(1,2)
+    oCell2=oSheet.getCellByposition(6,2)
+    
+	sBaseDatos = "Estudios"
+	sSQL = "INSERT INTO ""Finura"" (""ID_Muestra"",""Modulo_finura"") VALUES ("+oCell1.getValue()+","+oCell2.getValue()+")" 'CAMBIAR VALUES A INPUTS
+	oDBC = createUnoService("com.sun.star.sdb.DatabaseContext")	
+	oBD = oDBC.getByName( sBaseDatos )
+	oConexion = oBD.getConnection("","")
+	oDeclaracion = oConexion.createStatement()
+	oDeclaracion.executeUpdate( sSQL)
+
+	oDeclaracion.close()
+	oConexion.close()
+	oDeclaracion = Nothing
+	oConexion = Nothing
+	
+End Sub
+
+sub Ingresar_masa_retenida(Pulgada3,Pulgada112,Pulgada1,Pulgada34,Pulgada12,Pulgada38,Pulgada4,Pulgada8,Pulgada16,Pulgada30,Pulgada50,Pulgada100,Fondo)
+
+  Dim i As Integer
+  Dim j As Integer
+  Dim oDoc As Object, oSheet As Object, oCell As Object, oCellTipo As Object
+  oDoc=ThisComponent
+  oSheet=oDoc.Sheets.getByName("Hoja2")
+  'oCell=oSheet.getCellByPosition(4,2) 'A1
+  'oCell.setValue(23658)
+  'oCell.NumberFormat=2   '23658.00
+  'oCell.SetString("oops")
+  i =2	
+  'Do
+  'if Pulgada3 <> 0 then
+  oCell=oSheet.getCellByposition(3,i)
+  oCell.setValue(Pulgada3)
+  oCellTipo=oSheet.getCellByposition(2,i)
+  oCellTipo.SetString("3")
+  i=i+1
+  'end if
+  'if Pulgada112 <> 0 then
+  oCell=oSheet.getCellByposition(3,i)
+  oCell.setValue(Pulgada112)
+  oCellTipo=oSheet.getCellByposition(2,i)
+  oCellTipo.SetString("1 1/2")
+  i=i+1
+  'end if
+  'if Pulgada1 <> 0 then
+  oCell=oSheet.getCellByposition(3,i)
+  oCell.setValue(Pulgada1)
+  oCellTipo=oSheet.getCellByposition(2,i)
+  oCellTipo.SetString("1")
+  i=i+1
+  'end if
+  'if Pulgada34 <> 0 then
+  oCell=oSheet.getCellByposition(3,i)
+  oCell.setValue(Pulgada34)
+  oCellTipo=oSheet.getCellByposition(2,i)
+  oCellTipo.SetString("3/4")
+  i=i+1
+  'end if
+  'if Pulgada12 <> 0 then
+  oCell=oSheet.getCellByposition(3,i)
+  oCell.setValue(Pulgada12)
+  oCellTipo=oSheet.getCellByposition(2,i)
+  oCellTipo.SetString("1/2")
+  i=i+1
+  'end if
+  'if Pulgada38 <> 0 then
+  oCell=oSheet.getCellByposition(3,i)
+  oCell.setValue(Pulgada38)
+  oCellTipo=oSheet.getCellByposition(2,i)
+  oCellTipo.SetString("3/8")
+  i=i+1
+  'end if
+  'if Pulgada4 <> 0 then
+  oCell=oSheet.getCellByposition(3,i)
+  oCell.setValue(Pulgada4)
+  oCellTipo=oSheet.getCellByposition(2,i)
+  oCellTipo.SetString("4")
+  i=i+1
+  'end if
+  'if Pulgada8 <> 0 then
+  oCell=oSheet.getCellByposition(3,i)
+  oCell.setValue(Pulgada8)
+  oCellTipo=oSheet.getCellByposition(2,i)
+  oCellTipo.SetString("8")
+  i=i+1
+  'end if
+  'if Pulgada16 <> 0 then
+  oCell=oSheet.getCellByposition(3,i)
+  oCell.setValue(Pulgada16)
+  oCellTipo=oSheet.getCellByposition(2,i)
+  oCellTipo.SetString("16")
+  i=i+1
+  'end if
+  'if Pulgada30 <> 0 then
+  oCell=oSheet.getCellByposition(3,i)
+  oCell.setValue(Pulgada30)
+  oCellTipo=oSheet.getCellByposition(2,i)
+  oCellTipo.SetString("30")
+  i=i+1
+  'end if
+  'if Pulgada50 <> 0 then
+  oCell=oSheet.getCellByposition(3,i)
+  oCell.setValue(Pulgada50)
+  oCellTipo=oSheet.getCellByposition(2,i)
+  oCellTipo.SetString("50")
+  i=i+1
+  'end if
+  'if Pulgada100 <> 0 then
+  oCell=oSheet.getCellByposition(3,i)
+  oCell.setValue(Pulgada100)
+  oCellTipo=oSheet.getCellByposition(2,i)
+  oCellTipo.SetString("100")
+  i=i+1
+  'end if
+  'if Fondo <> 0 then
+  oCell=oSheet.getCellByposition(3,i)
+  oCell.setValue(Fondo)
+  oCellTipo=oSheet.getCellByposition(2,i)
+  oCellTipo.SetString("Fondo")
+  i=i+1
+  'end if
+  'oCell=oSheet.getCellByposition(3,i)
+  'Loop Until oCell.getString()=""  
+End Sub
+
+sub Porcentaje_retenido()
+
+
+  Dim i As Integer
+  Dim j As Integer
+  oDoc=ThisComponent
+  oSheet=oDoc.Sheets.getByName("Hoja2")
+  'oCell=oSheet.getCellByPosition(4,2) 'A1
+  'oCell.setValue(23658)
+  'oCell.NumberFormat=2   '23658.00
+  'oCell.SetString("oops")
+  i =3
+  j =2	
+  Do
+   ' ... loop body
+  f_atan = "=D"+i+"/SUMA(D3:D15)*100"
+  oSheet.getCellByposition(4,j).Formulalocal = f_atan
+  i=i+1
+  j=j+1
+  oCell=oSheet.getCellByposition(3,j)
+  Loop Until oCell.getString()=""  
+  'oCell.setFormula("=SUMA(D3:D23)")
+  'oCell.IsCellBackgroundTransparent = TRUE
+  'oCell.CellBackColor = RGB(255,141,56)
+End Sub
+
+sub Porcentaje_pasa ()
+
+  Dim oDoc As Object, oSheet As Object, oCell As Object
+  Dim i As Integer
+  Dim j As Integer
+  Dim k As Integer
+  
+  oDoc=ThisComponent
+  oSheet=oDoc.Sheets.getByName("Hoja2")
+  i =3
+  j =2
+  k =5
+  f_atan = "=100-E3"
+  oSheet.getCellByposition(5,j).Formulalocal = f_atan	
+  Do
+  oCell=oSheet.getCellByposition(2,j) 
+  if oCell.getString()="Fondo" Then
+       f_atan = "=0"
+       oSheet.getCellByposition(5,j).Formulalocal = f_atan
+       Exit Do      
+  end if 
+  f_atan ="=SI(Y(E"+(i+1)+"=0;E"+(i+1)+"=E"+(k)+";F"+i+"<>100);F"+i+";F"+i+"-E"+(i+1)+""
+  'f_atan = "=F"+i+"-E"+(i+1)+""
+  oSheet.getCellByposition(5,j+1).Formulalocal = f_atan
+  
+  i=i+1
+  j=j+1
+  k=k+1
+  oCell=oSheet.getCellByposition(2,j)
+       
+  Loop Until oCell.getString()=""
+  oCell=oSheet.getCellByposition(1,4)
+  if oCell.getString()="Gravilla" OR oCell.getString()="Grava" OR oCell.getString()="Gravilla 13mm" Then
+  f_atan = "=10-(F3+F4+F6+SUMA(F8:F14))/F3"
+  oSheet.getCellByposition(6,2).Formulalocal = f_atan
+  end if
+  if oCell.getString()="Arena Industrial" OR oCell.getString()="Arena Correctora" Then
+  f_atan = "==6-(SUMA(F9:F14))/F9"
+  oSheet.getCellByposition(6,2).Formulalocal = f_atan
+  end if
+   
+End Sub
+
+Sub Insertar_finos(P_Seco_Sucio,P_Seco_Lavado)
+	Dim oDBC As Object
+	Dim oBD As Object
+	Dim oConexion As Object
+	Dim oDeclaracion As Object
+	Dim sBaseDatos As String
+	Dim sSQL As String
+	Dim oDoc As Object, oSheet As Object
+	Dim oCell1 As Object
+	Dim Porcentaje As Double
+	oDoc=ThisComponent
+    oSheet=oDoc.Sheets.getByName("Hoja2")
+    oCell1=oSheet.getCellByposition(1,2)
+    Porcentaje=(P_Seco_Sucio-P_Seco_Lavado)/P_Seco_Sucio * 100
+    
+	sBaseDatos = "Estudios"
+	sSQL = "INSERT INTO ""Finos"" (""ID_Muestra"",""P_seco_sucio"",""P_seco_lavado"",""Porcentaje_finos"") VALUES ("+oCell1.getValue()+","+P_Seco_Sucio+","+P_Seco_Lavado+","+Porcentaje+")" 'CAMBIAR VALUES A INPUTS
+	oDBC = createUnoService("com.sun.star.sdb.DatabaseContext")	
+	oBD = oDBC.getByName( sBaseDatos )
+	oConexion = oBD.getConnection("","")
+	oDeclaracion = oConexion.createStatement()
+	oDeclaracion.executeUpdate( sSQL)
+
+	oDeclaracion.close()
+	oConexion.close()
+	oDeclaracion = Nothing
+	oConexion = Nothing
+End Sub
+
+Sub Iniciar()
+	Dim oDialogo As Object
+	DialogLibraries.LoadLibrary( "Standard" )
+	oDialogo = CreateUnoDialog( DialogLibraries.Standard.getByName("Menu") )
+	oDialogo.execute()
+	oDialogo.dispose()
+End Sub 
+
+REM-------------------------------------------------------------------------------
+Sub CuadroTexto1()
+Dim oDialogo As Object
+Dim oControl As Object
+
+	DialogLibraries.LoadLibrary( "Standard" )
+	oDialogo = CreateUnoDialog( DialogLibraries.Standard.getByName("Menu") )
+			
+	'El cuadro de texto
+	oControl = oDialogo.getControl("Fondo")
+	'Mostramos el cuadro de dialogo
+	oDialogo.execute()
+	'Al cerrar mostramos el contenido del control
+	MsgBox oControl.getValue()
+	oDialogo.dispose()	
+	
+End Sub
+
+Sub Ejecutar()'Para el boton de guardado
+Dim oDialogo As Object
+Dim oControlEstudio As Object
+Dim oControlTipoMuestra As Object
+Dim oControlFechaMuestra As Object
+Dim oControlFechaAnalisis As Object
+Dim oControlPlanta As Object
+Dim oControlPulgada3 As Object
+Dim oControlPulgada112 As Object
+Dim oControlPulgada1 As Object
+Dim oControlPulgada34 As Object
+Dim oControlPulgada12 As Object
+Dim oControlPulgada38 As Object
+Dim oControlPulgada4 As Object
+Dim oControlPulgada8 As Object
+Dim oControlPulgada16 As Object
+Dim oControlPulgada30 As Object
+Dim oControlPulgada50 As Object
+Dim oControlPulgada100 As Object
+Dim oControlFondo As Object
+Dim oControlProveedor As Object
+Dim oDoc As Object, oSheet As Object, oCell As Object
+Dim oControl As Object
+Dim Res As Integer
+  oDoc=ThisComponent
+  oSheet=oDoc.Sheets.getByName("Hoja2")
+  
+	DialogLibraries.LoadLibrary( "Standard" )
+	oDialogo = CreateUnoDialog( DialogLibraries.Standard.getByName("Menu") )
+			
+	'Rescata el input
+	oControlEstudio = oDialogo.getControl("Text_estudio") 
+	oControlFechaMuestra = oDialogo.getControl("Fecha_muestra")
+	oControlFechaAnalisis = oDialogo.getControl("Fecha_analisis")
+	oControlPlanta = oDialogo.getControl("Planta")
+	oControlTipoMuestra = oDialogo.getControl("Tipo_muestra")
+	oControlPulgada3 = oDialogo.getControl("Pulgada_3")  
+ 	oControlPulgada112 = oDialogo.getControl("Pulgada_112")
+ 	oControlPulgada1 = oDialogo.getControl("Pulgada_1")
+ 	oControlPulgada34 = oDialogo.getControl("Pulgada_34")
+ 	oControlPulgada12 = oDialogo.getControl("Pulgada_12")
+ 	oControlPulgada38 = oDialogo.getControl("Pulgada_38")
+ 	oControlPulgada4 = oDialogo.getControl("Pulgada_4")
+ 	oControlPulgada8 = oDialogo.getControl("Pulgada_8")
+ 	oControlPulgada16 = oDialogo.getControl("Pulgada_16")
+ 	oControlPulgada30 = oDialogo.getControl("Pulgada_30")
+ 	oControlPulgada50 = oDialogo.getControl("Pulgada_50")
+ 	oControlPulgada100 = oDialogo.getControl("Pulgada_100") 
+ 	oControlFondo = oDialogo.getControl("Fondo")
+ 	oControlProveedor =oDialogo.getControl("Proveedor")
+ 	'oCell.setValue(23658) 
+	'Mostramos el cuadro de dialogo
+	Res = oDialogo.execute()
+	Select Case Res
+		Case 0 : MsgBox "El usuario selecciono Cancelar"
+		Case 1 : 
+		Call Fecha_hoy()
+		oCell=oSheet.getCellByPosition(1,0)
+    	Call Insertar_estudio(oControlEstudio.Text,oCell.getString())
+    	Call Llamar_ID_estudio()
+    	Call Insertar_arido(oControlTipoMuestra.getSelectedItem(),oControlFechaMuestra.Text,oControlFechaAnalisis.Text,oControlPlanta.getSelectedItem())
+    	Call Llamar_ID_muestra()
+    	Call Ingresar_masa_retenida(oControlPulgada3.getValue(),oControlPulgada112.getValue(),oControlPulgada1.getValue(),oControlPulgada34.getValue(),oControlPulgada12.getValue(),oControlPulgada38.getValue(),oControlPulgada4.getValue(),oControlPulgada8.getValue(),oControlPulgada16.getValue(),oControlPulgada30.getValue(),oControlPulgada50.getValue(),oControlPulgada100.getValue(),oControlFondo.getValue())
+		Call Llamar_tipo_muestra()
+		Call Porcentaje_retenido()
+		Call Porcentaje_pasa()
+		Call Insertar_proveedor(oControlProveedor.Text)
+		Call Insertar_granulogia()
+		Call Insertar_finura()
+	
+	End Select
+	
+    oDialogo.dispose()
+    	Call Finos
+	
+End Sub
+
+Sub Finos()
+Dim oDialogo As Object
+Dim Res As Integer
+Dim oControlPSS As Object
+Dim oControlPSL As Object
+
+	DialogLibraries.LoadLibrary( "Standard" )
+	oDialogo = CreateUnoDialog( DialogLibraries.Standard.getByName("Finos"))
+	oControlPSS=oDialogo.getControl("P_seco_sucio")
+	oControlPSL=oDialogo.getControl("P_seco_limpio")
+	'El método execute, retorna un valor
+	Res = oDialogo.execute()
+	Select Case Res
+		Case 0 : MsgBox "Cancelar"
+		Case 1 : 
+		Call Insertar_finos(oControlPSS.GetValue(),oControlPSL.GetValue())
+	End Select
+	oDialogo.dispose()	
+	
+End Sub
+
+sub Fecha_hoy()
+ Dim oDoc As Object, oSheet As Object, oCell As Object, Fecha As String
+  oDoc=ThisComponent
+  oSheet=oDoc.Sheets.getByName("Hoja2")
+  f_atan = "=HOY()"
+  oSheet.getCellByposition(0,0).Formulalocal = f_atan
+  f_atan = "=CONCATENAR(AÑO(A1);""-"";MES(A1);""-"";DIA(A1))"
+  oSheet.getCellByposition(1,0).Formulalocal = f_atan 
+   
+End sub
+	
+
