@@ -266,6 +266,71 @@ Dim oCell2 As Object
 	
 End Sub
 
+Sub Insertar_densidad_real(Pseco,PSSS,Psumergido,MasaAgua,MasaMaterial)
+Dim oDBC As Object
+Dim oBD As Object
+Dim oConexion As Object
+Dim oDeclaracion As Object
+Dim sBaseDatos As String
+Dim sSQL As String
+Dim oDoc As Object, oSheet As Object
+Dim oCell As Object
+Dim Volumen As Integer, Densidad As Double ,  Absorcion As Double
+    Volumen=PSSS-Psumergido+MasaAgua-MasaMaterial
+    Densidad=Pseco/Volumen
+    Absorcion=(PSSS-Pseco)/Pseco*100
+	oDoc=ThisComponent
+    oSheet=oDoc.Sheets.getByName("Hoja2")
+    oCell=oSheet.getCellByposition(1,2)
+    
+	sBaseDatos = "Estudios"
+	sSQL = "INSERT INTO ""Densidad_real"" (""ID_Muestra"",""Peso_seco"",""Peso_SSS"",""Peso_sumergido"",""Masa_matraz_agua"",""Masa_matraz_material"",""Volumen"",""Densidad_real_seca"",""Porcentaje_absorcion"") VALUES ("+oCell.getValue()+","+Pseco+","+PSSS+","+Psumergido+","+MasaAgua+","+MasaMaterial+","+Volumen+","+Densidad+","+Absorcion+")" 'CAMBIAR VALUES A INPUTS
+	oDBC = createUnoService("com.sun.star.sdb.DatabaseContext")	
+	oBD = oDBC.getByName( sBaseDatos )
+	oConexion = oBD.getConnection("","")
+	oDeclaracion = oConexion.createStatement()
+	oDeclaracion.executeUpdate( sSQL)
+
+	oDeclaracion.close()
+	oConexion.close()
+	oDeclaracion = Nothing
+	oConexion = Nothing
+	
+End Sub
+
+Sub Insertar_densidad_ap(Medicion1,Medicion2,Medicion3,Volumen,Humedad)
+	Dim oDBC As Object
+	Dim oBD As Object
+	Dim oConexion As Object
+	Dim oDeclaracion As Object
+	Dim sBaseDatos As String
+	Dim sSQL As String
+	Dim oDoc As Object, oSheet As Object
+	Dim oCell As Object
+	Dim Densidad As Double
+    
+    Densidad=((Medicion1+Medicion2+Medicion3)/3)/Volumen*1000
+    
+	oDoc=ThisComponent
+    oSheet=oDoc.Sheets.getByName("Hoja2")
+    oCell=oSheet.getCellByposition(1,2)
+    
+	sBaseDatos = "Estudios"
+	sSQL = "INSERT INTO ""Densidad_ap_suelta"" (""ID_Muestra"",""Medicion_1"",""Medicion_2"",""Medicion_3"",""Volumen_medida"",""Densidad_ap_humeda"",""Porcentaje_humedad"") VALUES ("+oCell.getValue()+","+Medicion1+","+Medicion2+","+Medicion3+","+Volumen+","+Densidad+","+Humedad+")" 'CAMBIAR VALUES A INPUTS
+	oDBC = createUnoService("com.sun.star.sdb.DatabaseContext")	
+	oBD = oDBC.getByName( sBaseDatos )
+	oConexion = oBD.getConnection("","")
+	oDeclaracion = oConexion.createStatement()
+	oDeclaracion.executeUpdate( sSQL)
+
+	oDeclaracion.close()
+	oConexion.close()
+	oDeclaracion = Nothing
+	oConexion = Nothing
+	
+
+End Sub
+
 sub Ingresar_masa_retenida(Pulgada3,Pulgada112,Pulgada1,Pulgada34,Pulgada12,Pulgada38,Pulgada4,Pulgada8,Pulgada16,Pulgada30,Pulgada50,Pulgada100,Fondo)
 
   Dim i As Integer
@@ -376,7 +441,7 @@ End Sub
 
 sub Porcentaje_retenido()
 
-
+  Dim oDoc As Object, oSheet As Object, oCell As Object
   Dim i As Integer
   Dim j As Integer
   oDoc=ThisComponent
@@ -422,7 +487,6 @@ sub Porcentaje_pasa ()
        Exit Do      
   end if 
   f_atan ="=SI(Y(E"+(i+1)+"=0;E"+(i+1)+"=E"+(k)+";F"+i+"<>100);F"+i+";F"+i+"-E"+(i+1)+""
-  'f_atan = "=F"+i+"-E"+(i+1)+""
   oSheet.getCellByposition(5,j+1).Formulalocal = f_atan
   
   i=i+1
@@ -441,7 +505,7 @@ sub Porcentaje_pasa ()
   oSheet.getCellByposition(6,2).Formulalocal = f_atan
   end if
    
-End Sub
+End Sub 
 
 Sub Insertar_finos(P_Seco_Sucio,P_Seco_Lavado)
 	Dim oDBC As Object
@@ -460,6 +524,64 @@ Sub Insertar_finos(P_Seco_Sucio,P_Seco_Lavado)
     
 	sBaseDatos = "Estudios"
 	sSQL = "INSERT INTO ""Finos"" (""ID_Muestra"",""P_seco_sucio"",""P_seco_lavado"",""Porcentaje_finos"") VALUES ("+oCell1.getValue()+","+P_Seco_Sucio+","+P_Seco_Lavado+","+Porcentaje+")" 'CAMBIAR VALUES A INPUTS
+	oDBC = createUnoService("com.sun.star.sdb.DatabaseContext")	
+	oBD = oDBC.getByName( sBaseDatos )
+	oConexion = oBD.getConnection("","")
+	oDeclaracion = oConexion.createStatement()
+	oDeclaracion.executeUpdate( sSQL)
+
+	oDeclaracion.close()
+	oConexion.close()
+	oDeclaracion = Nothing
+	oConexion = Nothing
+End Sub
+
+Sub Insertar_eq_arena(Na1,Nt1,Na2,Nt2)
+
+	Dim oDBC As Object
+	Dim oBD As Object
+	Dim oConexion As Object
+	Dim oDeclaracion As Object
+	Dim sBaseDatos As String
+	Dim sSQL As String
+	Dim oDoc As Object, oSheet As Object
+	Dim oCell1 As Object
+	Dim Porcentaje As Double
+	oDoc=ThisComponent
+    oSheet=oDoc.Sheets.getByName("Hoja2")
+    oCell1=oSheet.getCellByposition(1,2)
+    Porcentaje=(Na1/Nt1+Na2/Nt2)*100/2    
+	sBaseDatos = "Estudios"
+	sSQL = "INSERT INTO ""Eq_arena"" (""ID_Muestra"",""Na1"",""Nt1"",""Na2"",""Nt2"",""Porcentaje_eq_arena"") VALUES ("+oCell1.getValue()+","+Na1+","+Nt1+","+Na2+","+Nt2+","+Porcentaje+")" 'CAMBIAR VALUES A INPUTS
+	oDBC = createUnoService("com.sun.star.sdb.DatabaseContext")	
+	oBD = oDBC.getByName( sBaseDatos )
+	oConexion = oBD.getConnection("","")
+	oDeclaracion = oConexion.createStatement()
+	oDeclaracion.executeUpdate( sSQL)
+
+	oDeclaracion.close()
+	oConexion.close()
+	oDeclaracion = Nothing
+	oConexion = Nothing
+
+End Sub
+
+Sub Insertar_cubicidad(PMuestra,PChancado,PRodado,PLaja)
+	Dim oDBC As Object
+	Dim oBD As Object
+	Dim oConexion As Object
+	Dim oDeclaracion As Object
+	Dim sBaseDatos As String
+	Dim sSQL As String
+	Dim oDoc As Object, oSheet As Object
+	Dim oCell1 As Object
+	Dim Porcentaje As Double
+	oDoc=ThisComponent
+    oSheet=oDoc.Sheets.getByName("Hoja2")
+    oCell1=oSheet.getCellByposition(1,2)
+    Porcentaje=(PChancado+PLaja)/PMuestra*100    
+	sBaseDatos = "Estudios"
+	sSQL = "INSERT INTO ""Cubicidad"" (""ID_Muestra"",""Peso_muestra"",""Peso_chancado"",""Peso_rodado"",""Peso_laja"",""Porcentaje_chancado"") VALUES ("+oCell1.getValue()+","+PMuestra+","+PChancado+","+PRodado+","+PLaja+","+Porcentaje+")" 'CAMBIAR VALUES A INPUTS
 	oDBC = createUnoService("com.sun.star.sdb.DatabaseContext")	
 	oBD = oDBC.getByName( sBaseDatos )
 	oConexion = oBD.getConnection("","")
@@ -572,6 +694,10 @@ Dim Res As Integer
 	
     oDialogo.dispose()
     	Call Finos
+    	Call Densidad_real
+    	Call Eq_arena
+    	Call Cubicidad
+    	Call Densidad_ap
 	
 End Sub
 
@@ -596,6 +722,126 @@ Dim oControlPSL As Object
 	
 End Sub
 
+Sub Densidad_real()
+Dim oDialogo As Object
+Dim Res As Integer
+Dim oControlPesoSeco As Object
+Dim oControlPesoSSS As Object
+Dim oControlPesoSumergido As Object
+Dim oControlMasaAgua As Object
+Dim oControlMasaMaterial As Object
+Dim oDoc As Object, oSheet As Object, oCell As Object
+	
+	oDoc=ThisComponent
+  	oSheet=oDoc.Sheets.getByName("Hoja2")
+	DialogLibraries.LoadLibrary( "Standard" )
+	oDialogo = CreateUnoDialog( DialogLibraries.Standard.getByName("Densidad_real"))
+	oControlPesoSeco=oDialogo.getControl("Peso_seco")
+	oControlPesoSSS=oDialogo.getControl("Peso_SSS")
+	oControlPesoSumergido=oDialogo.getControl("Peso_sumergido")
+	oControlMasaAgua=oDialogo.getControl("MasaAgua")
+	oControlMasaMaterial=oDialogo.getControl("MasaMaterial")
+	oCell=oSheet.getCellByposition(1,4)
+  	
+  	if oCell.getString()="Gravilla" OR oCell.getString()="Grava" OR oCell.getString()="Gravilla 13mm" Then
+  	oControlMasaMaterial.SetEditable(FALSE)
+	oControlMasaAgua.SetEditable(FALSE)
+  	end if
+  	if oCell.getString()="Arena Industrial" OR oCell.getString()="Arena Correctora" Then
+  	oControlPesoSumergido.SetEditable(FALSE)
+  	end if
+   
+	
+	
+	'El método execute, retorna un valor
+	Res = oDialogo.execute()
+	Select Case Res
+		Case 0 : MsgBox "Cancelar"
+		Case 1 : 
+		Call Insertar_densidad_real(oControlPesoSeco.GetValue(),oControlPesoSSS.GetValue(),oControlPesoSumergido.GetValue(),oControlMasaAgua.GetValue(),oControlMasaMaterial.GetValue())
+	End Select
+	oDialogo.dispose()	
+	
+End Sub
+
+Sub Eq_arena()
+
+Dim oDialogo As Object
+Dim Res As Integer
+Dim oControlNa1 As Object
+Dim oControlNt1 As Object
+Dim oControlNa2 As Object
+Dim oControlNt2 As Object
+	DialogLibraries.LoadLibrary( "Standard" )
+	oDialogo = CreateUnoDialog( DialogLibraries.Standard.getByName("Eq_arena"))
+	oControlNa1=oDialogo.getControl("Na1")
+	oControlNt1=oDialogo.getControl("Nt1")
+	oControlNa2=oDialogo.getControl("Na2")
+	oControlNt2=oDialogo.getControl("Nt2")
+	
+	Res = oDialogo.execute()
+	Select Case Res
+		Case 0 : MsgBox "Cancelar"
+		Case 1 : 
+		Call Insertar_eq_arena(oControlNa1.GetValue(),oControlNt1.GetValue(),oControlNa2.GetValue(),oControlNt2.GetValue())
+	End Select
+	oDialogo.dispose()	
+
+End sub
+
+Sub Densidad_ap()
+
+Dim oDialogo As Object
+Dim Res As Integer
+Dim oControlMedicion1 As Object
+Dim oControlMedicion2 As Object
+Dim oControlMedicion3 As Object
+Dim oControlVolumen As Object
+Dim oControlHumedad As Object
+	DialogLibraries.LoadLibrary( "Standard" )
+	oDialogo = CreateUnoDialog( DialogLibraries.Standard.getByName("Densidad_ap"))
+	oControlMedicion1=oDialogo.getControl("Medicion1")
+	oControlMedicion2=oDialogo.getControl("Medicion2")
+	oControlMedicion3=oDialogo.getControl("Medicion3")
+	oControlVolumen=oDialogo.getControl("Volumen")
+	oControlHumedad=oDialogo.getControl("Humedad")
+	
+	
+	Res = oDialogo.execute()
+	Select Case Res
+		Case 0 : MsgBox "Cancelar"
+		Case 1 : 
+		Call Insertar_densidad_ap(oControlMedicion1.GetValue(),oControlMedicion2.GetValue(),oControlMedicion3.GetValue(),oControlVolumen.GetValue(),oControlHumedad.GetValue())
+	End Select
+	oDialogo.dispose()	
+
+End sub
+
+Sub Cubicidad()
+
+Dim oDialogo As Object
+Dim Res As Integer
+Dim oControlPesoMuestra As Object
+Dim oControlPesoChancado As Object
+Dim oControlPesoRodado As Object
+Dim oControlPesoLaja As Object
+	DialogLibraries.LoadLibrary( "Standard" )
+	oDialogo = CreateUnoDialog( DialogLibraries.Standard.getByName("Cubicidad"))
+	oControlPesoMuestra=oDialogo.getControl("Peso_muestra")
+	oControlPesoChancado=oDialogo.getControl("Peso_chancado")
+	oControlPesoRodado=oDialogo.getControl("Peso_rodado")
+	oControlPesoLaja=oDialogo.getControl("Peso_laja")
+	
+	Res = oDialogo.execute()
+	Select Case Res
+		Case 0 : MsgBox "Cancelar"
+		Case 1 : 
+		Call Insertar_cubicidad(oControlPesoMuestra.GetValue(),oControlPesoChancado.GetValue(),oControlPesoRodado.GetValue(),oControlPesoLaja.GetValue())
+	End Select
+	oDialogo.dispose()	
+
+End sub
+
 sub Fecha_hoy()
  Dim oDoc As Object, oSheet As Object, oCell As Object, Fecha As String
   oDoc=ThisComponent
@@ -607,4 +853,3 @@ sub Fecha_hoy()
    
 End sub
 	
-
