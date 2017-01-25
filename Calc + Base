@@ -84,30 +84,30 @@ Dim mOpcBD(2) As New "com.sun.star.beans.PropertyValue"
 	
 End Sub
 
-Sub Llamar_tipo_muestra()
-Dim oHojaActiva As Object
-Dim sBaseDatos As String
-Dim sSQL As String
-Dim mOpcBD(2) As New "com.sun.star.beans.PropertyValue"
-    document = ThisComponent  'assigns the current document to the variable document
-	Sheets = document.Sheets  'get the container of all Sheets
-	Sheet = Sheets.getByName("Hoja2")   'get the sheet named Sheet2
+'Sub Llamar_tipo_muestra()
+'Dim oHojaActiva As Object
+'Dim sBaseDatos As String
+'Dim sSQL As String
+'Dim mOpcBD(2) As New "com.sun.star.beans.PropertyValue"
+ '   document = ThisComponent  'assigns the current document to the variable document
+'	Sheets = document.Sheets  'get the container of all Sheets
+'	Sheet = Sheets.getByName("Hoja2")   'get the sheet named Sheet2
 
-	sBaseDatos = "Estudios"
+'	sBaseDatos = "Estudios"
 	'Establecemos la consulta SQL
-	sSQL = "SELECT Tipo_muestra FROM Aridos ORDER BY ID_Muestra DESC LIMIT 1"
-	oHojaActiva = ThisComponent.getCurrentController.getActiveSheet()
+'	sSQL = "SELECT Tipo_muestra FROM Aridos ORDER BY ID_Muestra DESC LIMIT 1"
+'	oHojaActiva = ThisComponent.getCurrentController.getActiveSheet()
 	
-	mOpcBD(0).Name = "DatabaseName"
-	mOpcBD(0).Value = sBaseDatos
-	mOpcBD(1).Name = "SourceType"
-	'Observa como hemos cambiado el tipo de fuente a SQL
-	mOpcBD(1).Value = com.sun.star.sheet.DataImportMode.SQL
-	mOpcBD(2).Name = "SourceObject"
-	mOpcBD(2).Value = sSQL
-	Sheet.getCellRangeByName("B4").doImport( mOpcBD() )
+'	mOpcBD(0).Name = "DatabaseName"
+'	mOpcBD(0).Value = sBaseDatos
+'	mOpcBD(1).Name = "SourceType"
+'	'Observa como hemos cambiado el tipo de fuente a SQL
+'	mOpcBD(1).Value = com.sun.star.sheet.DataImportMode.SQL
+'	mOpcBD(2).Name = "SourceObject"
+'	mOpcBD(2).Value = sSQL
+'	Sheet.getCellRangeByName("B4").doImport( mOpcBD() )
 	
-End Sub
+'End Sub
 
 Sub Insertar_estudio(Nombre,Fecha)
 Dim oDBC As Object
@@ -454,8 +454,8 @@ sub Porcentaje_retenido()
   j =2	
   Do
    ' ... loop body
-  f_atan = "=D"+i+"/SUMA(D3:D15)*100"
-  oSheet.getCellByposition(4,j).Formulalocal = f_atan
+  Funcion_custom = "=D"+i+"/SUMA(D3:D15)*100"
+  oSheet.getCellByposition(4,j).Formulalocal = Funcion_custom
   i=i+1
   j=j+1
   oCell=oSheet.getCellByposition(3,j)
@@ -477,17 +477,17 @@ sub Porcentaje_pasa ()
   i =3
   j =2
   k =5
-  f_atan = "=100-E3"
-  oSheet.getCellByposition(5,j).Formulalocal = f_atan	
+  Funcion_custom = "=100-E3"
+  oSheet.getCellByposition(5,j).Formulalocal = Funcion_custom	
   Do
   oCell=oSheet.getCellByposition(2,j) 
   if oCell.getString()="Fondo" Then
-       f_atan = "=0"
-       oSheet.getCellByposition(5,j).Formulalocal = f_atan
+       Funcion_custom = "=0"
+       oSheet.getCellByposition(5,j).Formulalocal = Funcion_custom
        Exit Do      
   end if 
-  f_atan ="=SI(Y(E"+(i+1)+"=0;E"+(i+1)+"=E"+(k)+";F"+i+"<>100);F"+i+";F"+i+"-E"+(i+1)+""
-  oSheet.getCellByposition(5,j+1).Formulalocal = f_atan
+  Funcion_custom ="=SI(Y(E"+(i+1)+"=0;E"+(i+1)+"=E"+(k)+";F"+i+"<>100);F"+i+";F"+i+"-E"+(i+1)+""
+  oSheet.getCellByposition(5,j+1).Formulalocal = Funcion_custom
   
   i=i+1
   j=j+1
@@ -497,12 +497,12 @@ sub Porcentaje_pasa ()
   Loop Until oCell.getString()=""
   oCell=oSheet.getCellByposition(1,4)
   if oCell.getString()="Gravilla" OR oCell.getString()="Grava" OR oCell.getString()="Gravilla 13mm" Then
-  f_atan = "=10-(F3+F4+F6+SUMA(F8:F14))/F3"
-  oSheet.getCellByposition(6,2).Formulalocal = f_atan
+  Funcion_custom = "=10-(F3+F4+F6+SUMA(F8:F14))/F3"
+  oSheet.getCellByposition(6,2).Formulalocal = Funcion_custom
   end if
   if oCell.getString()="Arena Industrial" OR oCell.getString()="Arena Correctora" Then
-  f_atan = "==6-(SUMA(F9:F14))/F9"
-  oSheet.getCellByposition(6,2).Formulalocal = f_atan
+  Funcion_custom = "==6-(SUMA(F9:F14))/F9"
+  oSheet.getCellByposition(6,2).Formulalocal = Funcion_custom
   end if
    
 End Sub 
@@ -611,11 +611,11 @@ Dim oControl As Object
 	oDialogo = CreateUnoDialog( DialogLibraries.Standard.getByName("Menu") )
 			
 	'El cuadro de texto
-	oControl = oDialogo.getControl("Fondo")
+	oControl = oDialogo.getControl("Finos")
 	'Mostramos el cuadro de dialogo
 	oDialogo.execute()
 	'Al cerrar mostramos el contenido del control
-	MsgBox oControl.getValue()
+	MsgBox oControl.State
 	oDialogo.dispose()	
 	
 End Sub
@@ -624,9 +624,88 @@ Sub Ejecutar()'Para el boton de guardado
 Dim oDialogo As Object
 Dim oControlEstudio As Object
 Dim oControlTipoMuestra As Object
+Dim oControlPlanta As Object
+Dim oControlProveedor As Object
+Dim oControlCheckFinos As Object
+Dim oControlCheckDensidadR As Object
+Dim oControlCheckDensidadA As Object
+Dim oControlCheckArena As Object
+Dim oControlCheckCubicidad As Object
+Dim oControlNumMuestras As Object
+Dim oDoc As Object, oSheet As Object, oCell As Object
+Dim oControl As Object
+Dim Res As Integer
+Dim I As Integer
+Dim N As Integer
+  oDoc=ThisComponent
+  oSheet=oDoc.Sheets.getByName("Hoja2")
+  
+	DialogLibraries.LoadLibrary( "Standard" )
+	oDialogo = CreateUnoDialog( DialogLibraries.Standard.getByName("Menu") )
+			
+	'Rescata el input
+	oControlEstudio = oDialogo.getControl("Text_estudio") 
+	oControlPlanta = oDialogo.getControl("Planta")
+	oControlTipoMuestra = oDialogo.getControl("Tipo_muestra")
+ 	oControlProveedor =oDialogo.getControl("Proveedor")
+ 	oControlCheckFinos =oDialogo.getControl("Finos")
+ 	oControlCheckDensidadR =oDialogo.getControl("Densidad_R")
+ 	oControlCheckDensidadA =oDialogo.getControl("Densidad_A")
+ 	oControlCheckArena =oDialogo.getControl("Arena")
+ 	oControlCheckCubicidad =oDialogo.getControl("Cubicidad")
+ 	oControlNumMuestras=oDialogo.getControl("Num_muestras")
+ 
+ 	'oCell.setValue(23658) 
+	'Mostramos el cuadro de dialogo
+	Res = oDialogo.execute()
+	N=oControlNumMuestras.getValue()
+	Select Case Res
+		Case 0 : MsgBox "El usuario selecciono Cancelar"
+		Case 1 : 
+		Call Fecha_hoy()
+		oCell=oSheet.getCellByPosition(1,4)
+    	oCell.setString(oControlTipoMuestra.getSelectedItem())
+    	oCell=oSheet.getCellByPosition(1,6)
+    	oCell.setString(oControlPlanta.getSelectedItem())
+    	oCell=oSheet.getCellByPosition(1,8)
+    	oCell.setString(oControlProveedor.Text)
+    	oCell=oSheet.getCellByPosition(1,0) 
+    	Call Insertar_estudio(oControlEstudio.Text,oCell.getString())
+    	
+    	For I = 1 to N
+    	Call Granulometria()
+    	If oControlCheckFinos.State=1 Then
+    		Call Finos()
+    	End if
+    	If oControlCheckDensidadR.State=1 Then
+    	    Call Densidad_real()
+    	End if
+    	If oControlCheckDensidadA.State=1 Then
+    	    Call Densidad_ap()
+    	End if
+    	if oCell.getString()="Arena Industrial" OR oCell.getString()="Arena Correctora" Then
+    	If oControlCheckArena.State=1 Then
+    		Call Eq_arena()
+    	End if
+    	End if
+    	oCell=oSheet.getCellByposition(1,4)
+  		if oCell.getString()="Gravilla" OR oCell.getString()="Grava" OR oCell.getString()="Gravilla 13mm" Then' Ver si a gravilla 13mm se le realiza cubicidad
+    	If oControlCheckCubicidad.State=1 Then
+    		Call Cubicidad()
+    	End if
+    	End if
+    	Next I
+	End Select
+    oDialogo.dispose()
+    
+    
+	
+End Sub
+
+Sub Granulometria()'Para el boton de guardado
+Dim oDialogo As Object
 Dim oControlFechaMuestra As Object
 Dim oControlFechaAnalisis As Object
-Dim oControlPlanta As Object
 Dim oControlPulgada3 As Object
 Dim oControlPulgada112 As Object
 Dim oControlPulgada1 As Object
@@ -640,21 +719,18 @@ Dim oControlPulgada30 As Object
 Dim oControlPulgada50 As Object
 Dim oControlPulgada100 As Object
 Dim oControlFondo As Object
-Dim oControlProveedor As Object
-Dim oDoc As Object, oSheet As Object, oCell As Object
+Dim oDoc As Object, oSheet As Object, oCell1 As Object, oCell2 As Object
 Dim oControl As Object
 Dim Res As Integer
   oDoc=ThisComponent
   oSheet=oDoc.Sheets.getByName("Hoja2")
   
 	DialogLibraries.LoadLibrary( "Standard" )
-	oDialogo = CreateUnoDialog( DialogLibraries.Standard.getByName("Menu") )
+	oDialogo = CreateUnoDialog( DialogLibraries.Standard.getByName("Granulometria") )
 			
 	'Rescata el input
-	oControlEstudio = oDialogo.getControl("Text_estudio") 
 	oControlFechaMuestra = oDialogo.getControl("Fecha_muestra")
 	oControlFechaAnalisis = oDialogo.getControl("Fecha_analisis")
-	oControlPlanta = oDialogo.getControl("Planta")
 	oControlTipoMuestra = oDialogo.getControl("Tipo_muestra")
 	oControlPulgada3 = oDialogo.getControl("Pulgada_3")  
  	oControlPulgada112 = oDialogo.getControl("Pulgada_112")
@@ -669,35 +745,28 @@ Dim Res As Integer
  	oControlPulgada50 = oDialogo.getControl("Pulgada_50")
  	oControlPulgada100 = oDialogo.getControl("Pulgada_100") 
  	oControlFondo = oDialogo.getControl("Fondo")
- 	oControlProveedor =oDialogo.getControl("Proveedor")
  	'oCell.setValue(23658) 
 	'Mostramos el cuadro de dialogo
 	Res = oDialogo.execute()
 	Select Case Res
-		Case 0 : MsgBox "El usuario selecciono Cancelar"
+		Case 0 : Call Ejecutar()
 		Case 1 : 
-		Call Fecha_hoy()
-		oCell=oSheet.getCellByPosition(1,0)
-    	Call Insertar_estudio(oControlEstudio.Text,oCell.getString())
-    	Call Llamar_ID_estudio()
-    	Call Insertar_arido(oControlTipoMuestra.getSelectedItem(),oControlFechaMuestra.Text,oControlFechaAnalisis.Text,oControlPlanta.getSelectedItem())
+		Call Llamar_ID_estudio()
+		oCell1=oSheet.getCellByPosition(1,4)
+		oCell2=oSheet.getCellByPosition(1,6)
+    	Call Insertar_arido(oCell1.GetString(),oControlFechaMuestra.Text,oControlFechaAnalisis.Text,oCell2.GetString())
     	Call Llamar_ID_muestra()
     	Call Ingresar_masa_retenida(oControlPulgada3.getValue(),oControlPulgada112.getValue(),oControlPulgada1.getValue(),oControlPulgada34.getValue(),oControlPulgada12.getValue(),oControlPulgada38.getValue(),oControlPulgada4.getValue(),oControlPulgada8.getValue(),oControlPulgada16.getValue(),oControlPulgada30.getValue(),oControlPulgada50.getValue(),oControlPulgada100.getValue(),oControlFondo.getValue())
-		Call Llamar_tipo_muestra()
 		Call Porcentaje_retenido()
 		Call Porcentaje_pasa()
-		Call Insertar_proveedor(oControlProveedor.Text)
+		oCell1=oSheet.getCellByPosition(1,8)
+		Call Insertar_proveedor(oCell1.GetString())
 		Call Insertar_granulogia()
 		Call Insertar_finura()
 	
 	End Select
 	
     oDialogo.dispose()
-    	Call Finos
-    	Call Densidad_real
-    	Call Eq_arena
-    	Call Cubicidad
-    	Call Densidad_ap
 	
 End Sub
 
@@ -714,7 +783,7 @@ Dim oControlPSL As Object
 	'El método execute, retorna un valor
 	Res = oDialogo.execute()
 	Select Case Res
-		Case 0 : MsgBox "Cancelar"
+		Case 0 : Call Ejecutar()
 		Case 1 : 
 		Call Insertar_finos(oControlPSS.GetValue(),oControlPSL.GetValue())
 	End Select
@@ -756,7 +825,7 @@ Dim oDoc As Object, oSheet As Object, oCell As Object
 	'El método execute, retorna un valor
 	Res = oDialogo.execute()
 	Select Case Res
-		Case 0 : MsgBox "Cancelar"
+		Case 0 : Call Ejecutar()
 		Case 1 : 
 		Call Insertar_densidad_real(oControlPesoSeco.GetValue(),oControlPesoSSS.GetValue(),oControlPesoSumergido.GetValue(),oControlMasaAgua.GetValue(),oControlMasaMaterial.GetValue())
 	End Select
@@ -781,7 +850,7 @@ Dim oControlNt2 As Object
 	
 	Res = oDialogo.execute()
 	Select Case Res
-		Case 0 : MsgBox "Cancelar"
+		Case 0 : Call Ejecutar()
 		Case 1 : 
 		Call Insertar_eq_arena(oControlNa1.GetValue(),oControlNt1.GetValue(),oControlNa2.GetValue(),oControlNt2.GetValue())
 	End Select
@@ -809,7 +878,7 @@ Dim oControlHumedad As Object
 	
 	Res = oDialogo.execute()
 	Select Case Res
-		Case 0 : MsgBox "Cancelar"
+		Case 0 : Call Ejecutar()
 		Case 1 : 
 		Call Insertar_densidad_ap(oControlMedicion1.GetValue(),oControlMedicion2.GetValue(),oControlMedicion3.GetValue(),oControlVolumen.GetValue(),oControlHumedad.GetValue())
 	End Select
@@ -834,7 +903,7 @@ Dim oControlPesoLaja As Object
 	
 	Res = oDialogo.execute()
 	Select Case Res
-		Case 0 : MsgBox "Cancelar"
+		Case 0 : Call Ejecutar()
 		Case 1 : 
 		Call Insertar_cubicidad(oControlPesoMuestra.GetValue(),oControlPesoChancado.GetValue(),oControlPesoRodado.GetValue(),oControlPesoLaja.GetValue())
 	End Select
@@ -846,10 +915,11 @@ sub Fecha_hoy()
  Dim oDoc As Object, oSheet As Object, oCell As Object, Fecha As String
   oDoc=ThisComponent
   oSheet=oDoc.Sheets.getByName("Hoja2")
-  f_atan = "=HOY()"
-  oSheet.getCellByposition(0,0).Formulalocal = f_atan
-  f_atan = "=CONCATENAR(AÑO(A1);""-"";MES(A1);""-"";DIA(A1))"
-  oSheet.getCellByposition(1,0).Formulalocal = f_atan 
+  Funcion_custom = "=HOY()"
+  oSheet.getCellByposition(0,0).Formulalocal = Funcion_custom
+  Funcion_custom = "=CONCATENAR(AÑO(A1);""-"";MES(A1);""-"";DIA(A1))"
+  oSheet.getCellByposition(1,0).Formulalocal = Funcion_custom 
    
 End sub
 	
+
